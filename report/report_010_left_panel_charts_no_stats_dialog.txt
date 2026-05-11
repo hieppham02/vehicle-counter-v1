@@ -1,0 +1,61 @@
+REPORT #010 – Đưa biểu đồ vào Left Panel, Bỏ StatsDialog, Fix 4:3 Video
+Ngày: 2026-05-10
+==================================================
+
+## Yêu cầu
+1. Bỏ form Thống kê (StatsDialog) riêng biệt
+2. Mở rộng form chính, thêm Left Panel chứa 3 biểu đồ inline
+3. Bỏ mini chart "Lưu lượng" ở right panel
+4. Thu nhỏ 15% khu vực summary (frame_4)
+5. Giải quyết video 4:3 bị viền đen
+
+## Thay đổi Layout
+
+Bố cục mới (tổng chiều ngang ~1370px):
+  [Left Panel 230px] | [Summary + Video ~870px] | [Right Controls 250px]
+
+  - Left Panel: x=5, y=5, w=230, h=756
+    └── 3 chart cards dọc: Lưu lượng (bar) / Tỉ lệ (pie) / Xu hướng (line)
+  - frame_4 (summary): x=240, y=5, w=870, h=77  ← 15% nhỏ hơn (91→77px)
+  - frame_2 (video):   x=240, y=87, w=870, h=664
+  - frame_3 (controls): x=1115, y=5, w=250, h=756
+
+## Summary Cards – thu nhỏ 15%
+  - font-size số: 26px → 22px
+  - font-size label: 11px → 10px
+  - Chiều cao frame_4: 91 → 77px
+
+## Left Panel – 3 biểu đồ realtime
+  Mỗi biểu đồ trong QFrame riêng, header label + QLabel ảnh
+  Refresh 2 lần/giây qua QTimer → _refresh_left_charts()
+  Chart 0: Horizontal bar (lưu lượng từng loại xe)
+  Chart 1: Pie (tỉ lệ phần trăm)
+  Chart 2: Trend (xu hướng 60 sample gần nhất)
+
+## Bỏ StatsDialog
+  - Xóa import StatsDialog
+  - Xóa btn_open_stats signal connection
+  - Xóa _open_stats_dialog(), _refresh_mini_chart()
+  - Xóa lbl_mini_chart khỏi frame_3
+  - Renamed timer target: _refresh_mini_chart → _refresh_left_charts
+  - Trend history init trong __init__: self._trend_history = {...}
+
+## Giải pháp video 4:3 (Black Bars)
+
+Vấn đề: Qt dùng KeepAspectRatio → QLabel rộng hơn video → "viền đen"
+nếu QLabel background ≠ video background.
+
+Giải pháp đã áp dụng:
+  1. Đặt src_video background = #1A1B27 (xấp xỉ màu nền app #282A36)
+     → Viền đen "tàng hình", blend vào giao diện tối
+  2. Trong _load_video(): detect aspect ratio, set bg động
+     → Sẵn sàng cho xử lý thêm nếu cần (e.g. crop mode)
+
+Phương án nâng cao (chưa áp dụng):
+  - KeepAspectRatioByExpanding: crop cạnh trái/phải → không có bar
+    nhưng mất thông tin nếu đường đếm ở vùng bị crop
+  - Resize window tự động theo AR video: phức tạp với layout cố định
+  - Khuyến nghị: giữ KeepAspectRatio + blend background (đã áp dụng)
+
+## File thay đổi
+- gui/main_window.py (major layout refactor)

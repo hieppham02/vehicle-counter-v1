@@ -1,0 +1,8 @@
+- Model Path:E:\EAUT\Python\final_test\model\lastest.pt
+- Video Path:E:\EAUT\Python\final_test\test\
+    + cam1.mp4
+    + cam2.mp4
+    + cam3.mp4
+    + imgTest1.png
+    + imgTest2.png
+-UI Path: E:\EAUT\Python\final_test\vehicle-counter-v1\ui\MainForm.ui

@@ -1,0 +1,25 @@
+REPORT #004 – Fix UI Control Area Quá Nhỏ & Mandatory Line Drawing
+Ngày: 2026-05-10
+==================================================
+
+## Vấn đề
+- Khu vực điều khiển bên phải quá nhỏ, không thấy nút bấm
+- Cần bắt buộc người dùng vẽ line trước khi play video
+
+## Nguyên nhân
+- MainForm.ui định nghĩa frame_3 height=221px (quá nhỏ cho 7+ widgets)
+- Không có cơ chế kiểm soát workflow load→draw line→start
+
+## Cách sửa
+1. Tăng frame_3 height trong .ui: 221 → 751px
+2. Ẩn frame_5, frame_6 (unused), gộp content vào frame_3 duy nhất
+3. Mandatory line drawing flow:
+   - Sau khi load video → tự động vào edit mode
+   - btn_start.setEnabled(False) cho đến khi xác nhận line
+   - self._line_confirmed flag kiểm soát flow
+   - Chỉ sau _confirm_line() → btn_start.setEnabled(True)
+4. Dialog hướng dẫn hiện ra sau khi load video
+
+## File thay đổi
+- ui/MainForm.ui (frame_3 height)
+- gui/main_window.py (_line_confirmed flow, merged frame_3 layout)

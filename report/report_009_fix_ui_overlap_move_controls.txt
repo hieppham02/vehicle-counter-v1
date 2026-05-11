@@ -1,0 +1,38 @@
+REPORT #009 – Fix UI Overlap & Di Chuyển Speed/Resolution Controls
+Ngày: 2026-05-10
+==================================================
+
+## Vấn đề
+1. UI Bug: Biểu đồ "Lưu lượng" và phần "Trạng thái hệ thống" bị đè lên nhau
+   trong panel bên phải (frame_3)
+2. Yêu cầu: Chuyển Speed/Resolution settings xuống phía dưới màn hình video
+
+## Root Cause Overlap
+- lbl_mini_chart.setFixedHeight(180) chiếm quá nhiều không gian trong frame_3
+- Phần Speed/Resolution thêm vào frame_3 khiến tổng nội dung > chiều cao frame_3
+- QVBoxLayout không thể cắt bớt → các widget bị đè lên nhau
+
+## Cách sửa
+
+1. Giảm chiều cao mini chart: 180 → 120px
+   → Giải phóng 60px, tránh overlap với status panel
+
+2. Xóa Speed/Resolution khỏi frame_3
+
+3. Thêm ctrl_bar (QFrame, height=52px) vào frame_2 layout:
+   - Nằm ngay dưới lbl_info (time/fps bar)
+   - Horizontal layout: ⏱ Tốc độ [slider 130px] [val] | 📹 Phân giải [combo 140px]
+   - Background #23243A, style phân biệt với phần video
+   - QFrame.VLine chia đôi 2 section
+
+4. Điều chỉnh geometry:
+   - frame_3: x=1100, width=255 (tăng từ 241 để có thêm không gian)
+   - frame_4, frame_2: width=1080 (giảm từ 1090)
+
+## Folder Report
+Tạo thư mục /report/ để lưu toàn bộ lịch sử thay đổi.
+Mỗi bản fix/update = 1 file txt riêng với định dạng chuẩn.
+
+## File thay đổi
+- gui/main_window.py (layout refactor)
+- report/ (NEW folder + 9 report files)

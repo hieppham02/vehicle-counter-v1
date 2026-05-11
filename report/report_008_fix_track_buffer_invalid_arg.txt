@@ -1,0 +1,27 @@
+REPORT #008 – Fix Lỗi track_buffer Invalid YOLO Argument
+Ngày: 2026-05-10
+==================================================
+
+## Lỗi
+Thông báo lỗi khi bấm "Bắt đầu":
+"'[31m[1mtrack_buffer[0m' is not a valid YOLO argument.
+Similar arguments are i.e. ['stream_buffer=False', 'tracker=botsort.yaml']."
+
+## Root Cause
+track_buffer=60 được truyền trực tiếp vào model.track() như keyword argument.
+Đây KHÔNG phải tham số hợp lệ của API Ultralytics model.track().
+track_buffer là tham số cấu hình tracker, phải đặt trong file YAML.
+
+## Cách sửa
+1. Xóa track_buffer=60 khỏi model.track() call
+2. Tạo file cấu hình riêng configs/bytetrack_custom.yaml với:
+   - track_buffer: 60
+   - track_low_thresh: 0.05
+   - match_thresh: 0.85
+3. Trỏ tracker parameter sang custom yaml:
+   tracker=os.path.join(..., 'configs', 'bytetrack_custom.yaml')
+4. Thêm import os vào yolo_model.py
+
+## File thay đổi
+- models/yolo_model.py (remove invalid arg, use custom yaml path)
+- configs/bytetrack_custom.yaml (đã tạo ở report #007, confirm dùng)

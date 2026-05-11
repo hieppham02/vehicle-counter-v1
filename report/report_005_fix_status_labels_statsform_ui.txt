@@ -1,0 +1,32 @@
+REPORT #005 – Fix Status Labels Không Hiện Số Liệu & StatsForm.ui
+Ngày: 2026-05-10
+==================================================
+
+## Vấn đề
+- Trạng thái hệ thống hiển thị "–" cho tất cả giá trị dù đang chạy
+- Yêu cầu chuyển form Thống kê sang file .ui riêng
+
+## Root Cause (Status Labels Bug)
+Có 2 block code tạo self._status_labels:
+  1. Block trong frame_3 (visible) → labels đúng ✅
+  2. Block trong frame_6 (đã bị hide()) → ghi đè dict ❌
+Dict bị ghi đè, trỏ vào widgets ẩn → setText() không có tác dụng hiển thị
+
+## Cách sửa
+- Xóa hoàn toàn block code trong frame_6
+- self._status_labels chỉ có 1 nguồn duy nhất trong frame_3
+
+## StatsForm.ui
+Tạo ui/StatsForm.ui với Qt Designer XML format:
+- Header: tiêu đề + nút Đóng
+- Summary bar: 4 QFrame cards (car/bus/truck/motorbike)
+  với border màu riêng cho mỗi loại
+- Grid 2×2: 4 QFrame, mỗi cái có title + "Xuất CSV" button
+  + QLabel placeholder cho chart image
+- stats_dialog.py viết lại để dùng uic.loadUi('ui/StatsForm.ui')
+  bind widget theo tên, không tạo bằng code Python nữa
+
+## File thay đổi
+- gui/main_window.py (xóa duplicate frame_6 block)
+- gui/stats_dialog.py (viết lại dùng uic.loadUi)
+- ui/StatsForm.ui (NEW)
