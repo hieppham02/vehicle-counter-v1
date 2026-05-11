@@ -1,0 +1,30 @@
+REPORT #002 – Tối ưu FPS & Cải thiện UI Charts
+Ngày: 2026-05-09
+==================================================
+
+## Mục tiêu
+- FPS quá thấp so với video gốc
+- Biểu đồ Vehicle Statistics không hợp lý
+
+## Thay đổi
+1. FPS Optimization:
+   - Kích hoạt FP16 inference: half=True
+   - Giảm imgsz từ 640 → 480
+   - Throttle stats/progress emit: max 5 lần/giây
+   - Chuyển Matplotlib sang Agg backend (non-interactive)
+   - Render chart sang BytesIO → QPixmap thay vì draw trực tiếp
+
+2. Biểu đồ:
+   - Đổi từ bảng sang biểu đồ cột ngang (horizontal bar)
+   - Trục X = lưu lượng, trục Y = tên phương tiện (tiếng Việt)
+   - Tăng kích thước biểu đồ
+
+3. UI:
+   - Bỏ red line, chỉ giữ blue line (counting line)
+   - frame_4: Thêm Dashboard summary cards
+   - frame_6: Thêm live traffic stats
+
+## File thay đổi
+- gui/workers.py (throttle, FP16, imgsz)
+- gui/main_window.py (chart, layout)
+- models/yolo_model.py (half=True, imgsz=480)

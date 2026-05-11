@@ -1,0 +1,21 @@
+REPORT #006 – Bỏ Left Panel, Thêm Nút Thống Kê, Fix Status Data
+Ngày: 2026-05-10
+==================================================
+
+## Yêu cầu
+- Bỏ hẳn left panel sidebar
+- Nút Thống Kê đặt dưới nút Xuất CSV trong panel phải
+
+## Thay đổi
+1. Ẩn left sidebar frame:
+   self.frame.hide()
+   Dịch chuyển frame_2, frame_4 sang x=10 (tăng chiều rộng từ 871 → 1090px)
+
+2. Thêm btn_open_stats ngay sau btn_export_f6 trong frame_3
+
+3. Fix _on_stats():
+   Bug: dùng getattr(worker, '_last_track_count', 0) → thuộc tính không tồn tại
+   Fix: đọc len(self.worker.counter.track_history) → số xe đang track
+
+## File thay đổi
+- gui/main_window.py

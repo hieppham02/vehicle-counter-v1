@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StatsForm</class>
+ <widget class="QDialog" name="StatsForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1205</width>
+    <height>918</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Thống kê &amp; Phân tích chi tiết</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog { background-color: #282A36; } QLabel { color: #F8F8F2; }</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>15</number>
+   </property>
+   <property name="leftMargin">
+    <number>20</number>
+   </property>
+   <property name="topMargin">
+    <number>20</number>
+   </property>
+   <property name="rightMargin">
+    <number>20</number>
+   </property>
+   <property name="bottomMargin">
+    <number>20</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="lbl_title">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: #8BE9FD; font-size: 20px; font-weight: bold; margin-bottom: 5px;</string>
+     </property>
+     <property name="text">
+      <string>BIỂU ĐỒ PHÂN TÍCH GIAO THÔNG CHUYÊN SÂU</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="spacing">
+      <number>15</number>
+     </property>
+     <item row="0" column="2">
+      <widget class="QFrame" name="frame_gauge">
+       <property name="styleSheet">
+        <string notr="true">QFrame { background: #1E1F29; border-radius: 8px; border: 1px solid #44475A; } QLabel { border: none; } QPushButton { background: #44475A; color: white; border-radius: 4px; font-weight: bold; padding: 4px 10px; } QPushButton:hover { background: #6272A4; }</string>
+       </property>
+       <layout class="QVBoxLayout">
+        <item>
+         <layout class="QHBoxLayout">
+          <item>
+           <widget class="QLabel" name="lbl_title_gauge">
+            <property name="styleSheet">
+             <string notr="true">color: #FF5555; font-weight: bold; font-size: 14px;</string>
+            </property>
+            <property name="text">
+             <string>⏱️ Đo mức độ ùn tắc (Traffic Density)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_export_gauge">
+            <property name="text">
+             <string>📥 Xuất CSV</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="lbl_chart_gauge">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QFrame" name="frame_barh">
+       <property name="styleSheet">
+        <string notr="true">QFrame { background: #1E1F29; border-radius: 8px; border: 1px solid #44475A; } QLabel { border: none; } QPushButton { background: #44475A; color: white; border-radius: 4px; font-weight: bold; padding: 4px 10px; } QPushButton:hover { background: #6272A4; }</string>
+       </property>
+       <layout class="QVBoxLayout">
+        <item>
+         <layout class="QHBoxLayout">
+          <item>
+           <widget class="QLabel" name="lbl_title_barh">
+            <property name="styleSheet">
+             <string notr="true">color: #BD93F9; font-weight: bold; font-size: 14px;</string>
+            </property>
+            <property name="text">
+             <string>📊 Tổng lưu lượng theo loại xe (Bar Chart)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_export_barh">
+            <property name="text">
+             <string>📥 Xuất CSV</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="lbl_chart_barh">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QFrame" name="frame_pie">
+       <property name="styleSheet">
+        <string notr="true">QFrame { background: #1E1F29; border-radius: 8px; border: 1px solid #44475A; } QLabel { border: none; } QPushButton { background: #44475A; color: white; border-radius: 4px; font-weight: bold; padding: 4px 10px; } QPushButton:hover { background: #6272A4; }</string>
+       </property>
+       <layout class="QVBoxLayout">
+        <item>
+         <layout class="QHBoxLayout">
+          <item>
+           <widget class="QLabel" name="lbl_title_pie">
+            <property name="styleSheet">
+             <string notr="true">color: #50FA7B; font-weight: bold; font-size: 14px;</string>
+            </property>
+            <property name="text">
+             <string>🥧 Tỷ lệ phương tiện (Pie Chart)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_export_pie">
+            <property name="text">
+             <string>📥 Xuất CSV</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="lbl_chart_pie">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QFrame" name="frame_hist">
+       <property name="styleSheet">
+        <string notr="true">QFrame { background: #1E1F29; border-radius: 8px; border: 1px solid #44475A; } QLabel { border: none; } QPushButton { background: #44475A; color: white; border-radius: 4px; font-weight: bold; padding: 4px 10px; } QPushButton:hover { background: #6272A4; }</string>
+       </property>
+       <layout class="QVBoxLayout">
+        <item>
+         <layout class="QHBoxLayout">
+          <item>
+           <widget class="QLabel" name="lbl_title_hist">
+            <property name="styleSheet">
+             <string notr="true">color: #FFB86C; font-weight: bold; font-size: 14px;</string>
+            </property>
+            <property name="text">
+             <string>📈 Lưu lượng theo chu kỳ (Histogram)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_export_hist">
+            <property name="text">
+             <string>📥 Xuất CSV</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="lbl_chart_hist">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

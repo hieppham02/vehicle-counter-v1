@@ -1,0 +1,31 @@
+REPORT #003 – Thêm Tab Thống Kê & Điều chỉnh Line
+Ngày: 2026-05-10
+==================================================
+
+## Mục tiêu
+- Thêm LineEditorOverlay để vẽ đường đếm linh hoạt
+- Tab Thống Kê thành form riêng biệt
+
+## Thay đổi
+1. LineEditorOverlay (gui/line_editor.py – NEW):
+   - Widget trong suốt đặt chồng lên video
+   - Bắt sự kiện mouse: press → move → release để vẽ đường
+   - QPainter vẽ đường vàng + endpoint circles
+   - Map tọa độ widget → tọa độ video thực tế (KeepAspectRatio)
+   - Signal line_changed(pt1, pt2) emit khi kéo
+
+2. StatsDialog (gui/stats_dialog.py – NEW):
+   - Non-blocking QDialog (setModal=False)
+   - 4 chart cards: Cột ngang, Tròn, Xu hướng, Radar
+   - QTimer 500ms auto-refresh
+   - Per-chart CSV export
+
+3. main_window.py:
+   - Tích hợp LineEditorOverlay vào src_video
+   - Mở StatsDialog khi nhấn menu Thống kê
+   - Thêm frame_6 Status panel (FPS, Objects, Total, Line coords)
+
+## File thay đổi
+- gui/line_editor.py (NEW)
+- gui/stats_dialog.py (NEW)
+- gui/main_window.py (major rewrite)

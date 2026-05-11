@@ -1,0 +1,31 @@
+{
+    "model_path": "E:/EAUT/Python/final_test/model/lastest.pt",
+    "video_dir": "E:/EAUT/Python/final_test/test/",
+    "confidence_threshold": 0.35,
+    "iou_threshold": 0.45,
+    "target_classes": [
+        0,
+        1,
+        2,
+        3
+    ],
+    "counting_lines": [
+        {
+            "name": "",
+            "color": [
+                255,
+                140,
+                0
+            ],
+            "pt1": [
+                0,
+                447
+            ],
+            "pt2": [
+                888,
+                444
+            ]
+        }
+    ],
+    "hide_counted": true
+}

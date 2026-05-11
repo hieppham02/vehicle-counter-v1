@@ -1,0 +1,24 @@
+REPORT #001 – Khởi tạo hệ thống & Sửa lỗi detect
+Ngày: 2026-05-09
+==================================================
+
+## Mục tiêu
+- Khởi tạo dự án Vehicle Counter & Traffic Analytics System
+- Cấu hình detect đúng 4 class: car, truck, motorbike, bus
+
+## Thay đổi
+1. Cấu hình target_classes trong app_config.json: [2, 3, 5, 7]
+   (COCO: 2=car, 3=motorcycle, 5=bus, 7=truck)
+2. Sửa class_name mapping: 'motorcycle' → 'motorbike' để khớp counter
+3. Thêm icon/logo vào MainForm
+
+## Bug đã sửa
+- Car không được detect: do class ID sai (dùng 0 thay vì 2)
+- Time/Remaining không hiện: lỗi tính fps từ cap.get(CAP_PROP_FPS)
+- App crash sau 30s: VideoWorker không cleanup VideoStream → memory leak
+
+## File thay đổi
+- configs/app_config.json (target_classes)
+- models/yolo_model.py (class mapping)
+- gui/main_window.py (icon, time display)
+- gui/workers.py (cleanup VideoStream)

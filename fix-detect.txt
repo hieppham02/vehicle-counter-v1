@@ -1,0 +1,78 @@
+PHÂN TÍCH VÀ GIẢI PHÁP: XỬ LÝ MẤT TRACKING KHI BỊ CHE KHUẤT (OCCLUSION)
+===========================================================================
+
+1. NGUYÊN NHÂN GỐC RỄ
+======================
+
+Khi xe A bị xe B che khuất trong một số frame liên tiếp:
+
+a) YOLO DETECTION THẤT BẠI: Model không phát hiện được xe A vì pixel của nó bị
+   che hoàn toàn. Không có detection → ByteTrack không có input để duy trì track.
+
+b) BYTETRACK MẤT TRACK ID: ByteTrack có tham số `track_buffer` (mặc định = 30 frame).
+   Nếu xe không xuất hiện trong 30 frame liên tiếp → track bị xóa hoàn toàn.
+   Khi xe A xuất hiện trở lại → được gán ID MỚI (ví dụ từ #45 thành #89).
+
+c) VẤN ĐỀ ĐẾM: VehicleCounter.crossed_ids lưu các ID đã vượt line. ID #45 đã
+   vượt line và được đánh dấu. Nhưng ID #89 (cùng 1 xe) KHÔNG có trong crossed_ids
+   → có thể bị đếm 2 lần nếu vị trí xuất hiện lại ở phía trước line.
+   Ngược lại, nếu ID bị mất trước khi vượt line → xe không được đếm (đếm thiếu).
+
+2. CÁC PHƯƠNG ÁN GIẢI QUYẾT
+=============================
+
+PHƯƠNG ÁN 1 [ĐÃ ÁP DỤNG]: TĂNG TRACK_BUFFER + LOST TRACK INTERPOLATION
+------------------------------------------------------------------------
+- Tăng `track_buffer` trong bytetrack.yaml từ 30 → 60 frame
+  → ByteTrack sẽ "nhớ" xe bị mất lâu hơn, tăng khả năng re-association đúng ID.
+- Trong VehicleCounter: khi track_id mới xuất hiện, kiểm tra vị trí cuối cùng
+  đã lưu của tất cả các "ghost track" (ID đã mất gần đây). Nếu khoảng cách
+  Euclidean < threshold → coi là cùng 1 xe → merge ID.
+
+PHƯƠNG ÁN 2 [ĐÃ ÁP DỤNG]: GHOST TRACK MEMORY TRONG COUNTER
+------------------------------------------------------------
+- Khi 1 track_id biến mất khỏi detections: KHÔNG xóa ngay khỏi track_history.
+  Thay vào đó lưu vào `ghost_tracks` với timestamp.
+- Khi track_id MỚI xuất hiện gần vị trí của 1 ghost_track (trong vòng
+  GHOST_TIMEOUT_FRAMES): coi đây là cùng 1 xe, kế thừa lịch sử vị trí và
+  trạng thái "đã vượt line" của ghost.
+- Ghost tracks bị xóa sau GHOST_TIMEOUT_FRAMES (mặc định = 60 frame ≈ 2 giây ở 30fps).
+
+PHƯƠNG ÁN 3 [ĐÃ ÁP DỤNG]: TĂNG CONFIDENCE THRESHOLD THẤP CHO BYTETRACK
+------------------------------------------------------------------------
+- ByteTrack có 2 ngưỡng: high_conf và low_conf.
+- High-conf detections: ghép với existing tracks ngay.
+- Low-conf detections (second association): dùng để recover các tracks đang bị
+  mất tạm thời (lost tracks). Điều này cực kỳ quan trọng khi bị che khuất một phần.
+- Đã điều chỉnh trong bytetrack.yaml: track_low_thresh = 0.1 (mặc định 0.1 → giữ nguyên)
+  match_thresh = 0.85 (tăng từ 0.8 để kiểm soát re-association tốt hơn)
+
+PHƯƠNG ÁN 4 [GHI CHÚ - NÂNG CAO]: SỬ DỤNG BOTSORT THAY BYTETRACK
+------------------------------------------------------------------
+- BoTSORT sử dụng Re-ID (Re-Identification) features để nhận dạng lại xe
+  sau khi bị che khuất, ngay cả khi ID thay đổi.
+- Cách đổi: thay "bytetrack.yaml" bằng "botsort.yaml" trong yolo_model.py.
+- Nhược điểm: chậm hơn ByteTrack ~15-20% do tính toán Re-ID features.
+
+3. CHI TIẾT CÁC THAY ĐỔI ĐÃ THỰC HIỆN
+========================================
+
+File: analytics/counter.py
+  - Thêm `ghost_tracks`: Dict lưu {old_id: (last_centroid, class_name, timestamp, crossed_lines)}
+  - Hàm `_find_ghost_match()`: tìm ghost track gần nhất với track mới xuất hiện
+  - GHOST_MAX_DIST = 120 px: ngưỡng khoảng cách để coi là cùng 1 xe
+  - GHOST_TIMEOUT = 60 frame: số frame giữ ghost track trước khi xóa
+
+File: models/yolo_model.py
+  - Tăng `track_buffer=60` trong lời gọi model.track()
+
+File: workers.py (không thay đổi logic đếm)
+
+4. GIỚI HẠN KHÔNG THỂ GIẢI QUYẾT HOÀN TOÀN
+=============================================
+- Nếu xe bị che khuất > GHOST_TIMEOUT frame VÀ vị trí xuất hiện lại cách xa
+  vị trí mất > GHOST_MAX_DIST: hệ thống sẽ tạo ID mới (chấp nhận được).
+- Nếu 2 xe gần nhau và cùng bị mất rồi xuất hiện lại: có thể nhầm ID.
+  Cần Re-ID features (BoTSORT) để giải quyết triệt để.
+- Xe bị che khuất hoàn toàn suốt đoạn line counting: không thể đếm được
+  bằng bất kỳ phương pháp detection-based nào.

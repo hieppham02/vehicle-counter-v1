@@ -1,0 +1,46 @@
+REPORT #007 – Thêm Speed/Resolution Control & Fix Occlusion Bug
+Ngày: 2026-05-10
+==================================================
+
+## Tính năng mới: Điều chỉnh tốc độ & độ phân giải
+
+1. Speed Slider (panel phải):
+   - Dải 0.25× → 2.0× (8 bước)
+   - Mapping: {1:0.25, 2:0.5, 3:0.75, 4:1.0, 5:1.25, 6:1.5, 7:1.75, 8:2.0}
+   - Thay đổi được ngay khi đang chạy (không cần dừng)
+   - Speed < 1.0 → sleep delay để làm chậm playback
+
+2. Resolution ComboBox:
+   - 320 (Nhanh nhất), 480 (Khuyến nghị), 640 (Chuẩn), 736 (Chất lượng cao)
+   - Thay đổi detector.current_imgsz ngay lập tức
+   - Tác động trực tiếp tới detection accuracy và FPS
+
+3. VideoWorker: thêm set_speed(), set_imgsz() methods
+4. YoloDetector: thêm current_imgsz attribute, đọc trong track()
+
+## Fix Occlusion Bug (đếm thiếu khi xe bị che khuất)
+
+Root cause: ByteTrack mất track ID khi xe bị che → ID mới được tạo
+→ đếm 2 lần hoặc bỏ sót xe ở vùng counting line
+
+Giải pháp đã áp dụng:
+
+1. Ghost-Track Memory (analytics/counter.py):
+   - Track biến mất → lưu vào _ghost_tracks (TTL=60 frames)
+   - Track mới xuất hiện gần ghost (<120px) → kế thừa lịch sử
+   - Xe kế thừa trạng thái "đã qua line" → không đếm 2 lần
+
+2. Custom ByteTrack config (configs/bytetrack_custom.yaml):
+   - track_buffer: 60 (tăng từ 30 → 60)
+   - track_low_thresh: 0.05 (giảm để recover xe bị che một phần)
+   - match_thresh: 0.85 (tăng để tránh nhầm ID)
+
+3. Tài liệu: fix-detect.txt (phân tích chi tiết)
+
+## File thay đổi
+- analytics/counter.py (ghost track logic)
+- models/yolo_model.py (current_imgsz dynamic)
+- gui/workers.py (set_speed, set_imgsz)
+- gui/main_window.py (slider + combo UI)
+- configs/bytetrack_custom.yaml (NEW)
+- fix-detect.txt (NEW)

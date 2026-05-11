@@ -1,0 +1,10 @@
+# Ultralytics AGPL-3.0 License
+# Custom ByteTrack config for Vehicle Counter – optimized for occlusion recovery
+
+tracker_type: bytetrack
+track_high_thresh: 0.25   # First-stage match threshold
+track_low_thresh: 0.05    # Lowered: recover partially-occluded vehicles
+new_track_thresh: 0.25    # Threshold to start a new track
+track_buffer: 60          # Keep lost tracks 60 frames (~2s at 30fps) – KEY for occlusion
+match_thresh: 0.85        # Slightly stricter matching to reduce ID switches
+fuse_score: True          # Fuse detection score with IoU for stable tracking
